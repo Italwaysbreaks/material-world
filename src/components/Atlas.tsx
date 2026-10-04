@@ -40,8 +40,8 @@ export function Atlas() {
         </div>
 
         <div className="stage-rail" aria-label="Supply chain stages">
-          {commodity.stages.map((item, index) => <button key={item.id} onClick={() => chooseStage(index)} className={!fullJourney && index === stageIndex ? "active" : index < stageIndex || fullJourney ? "passed" : ""}>
-            <span className="stage-number">{String(item.order).padStart(2, "0")}</span><span className="stage-name">{item.name}</span>
+          {commodity.stages.map((item, index) => <button key={item.id} onClick={() => chooseStage(index)} className={`stage-${index + 1} ${!fullJourney && index === stageIndex ? "active" : index < stageIndex || fullJourney ? "passed" : ""}`}>
+            <span className="stage-icon" aria-hidden="true">{["⌁", "◌", "◇", "▦", "⌂"][index] ?? "•"}</span><span className="stage-number">{String(item.order).padStart(2, "0")}</span><span className="stage-name">{item.name}</span><span className="stage-description">{item.description}</span>
           </button>)}
         </div>
 
@@ -61,13 +61,23 @@ export function Atlas() {
           <h2>{selected.name}</h2><p className="country">{selected.country}</p>
           <div className="stage-pill"><span style={{ background: commodity.color }} />{commodity.stages.find((s) => s.id === selected.stageId)?.name}</div>
           <dl className="material-change"><div><dt>INPUT MATERIAL</dt><dd>{selected.input}</dd></div><span>→</span><div><dt>OUTPUT MATERIAL</dt><dd>{selected.output}</dd></div></dl>
-          <Info title="What happens here" text={selected.description} />
+          <Info title="Overview · What happens here" text={selected.description} />
           <Info title="Why this location matters" text={selected.whyItMatters} />
-          <Info title="What happens next" text={selected.nextStep} last />
+          <Info title="Inputs & outputs" text={`${selected.input} becomes ${selected.output}.`} />
+          <Info title="Where it goes next" text={selected.nextStep} />
+          <Info title="Downstream uses" text={downstreamCopy(selected.output)} last />
         </aside>}
       </section>
     </main>
   );
+}
+
+function downstreamCopy(output: string) {
+  const normalized = output.toLowerCase();
+  if (normalized.includes("cathode") || normalized.includes("copper")) return "Wire, motors, transformers, electronics and construction systems depend on this material moving onward.";
+  if (normalized.includes("battery") || normalized.includes("cell")) return "Electric vehicles, grid storage and portable electronics turn these materials into stored energy.";
+  if (normalized.includes("fuel") || normalized.includes("petroleum")) return "Mobility, aviation, shipping and chemical manufacturing draw on these products.";
+  return "This output becomes an input for the next stage, connecting resource landscapes to everyday products.";
 }
 
 function Info({ title, text, last = false }: { title: string; text: string; last?: boolean }) {
