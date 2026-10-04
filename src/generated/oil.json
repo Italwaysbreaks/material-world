@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "commodityId": "oil",
+  "generatedAt": "2026-02-01T00:00:00.000Z",
+  "mode": "curated-fallback",
+  "note": "Adapter-ready placeholder; geography remains curated until the corresponding public-source adapter is activated.",
+  "source": {
+    "publisher": "U.S. Energy Information Administration",
+    "dataset": "Petroleum data (adapter planned)",
+    "url": "https://www.eia.gov/petroleum/"
+  }
+}
