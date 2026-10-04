@@ -1,11 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useMemo, useState } from "react";
-import type { CSSProperties } from "react";
 import { commodities, Location } from "@/data/commodities";
-import { findEntityByName, locationLookup } from "@/data/graph";
 
 const WorldMap = dynamic(() => import("./WorldMap").then((m) => m.WorldMap), { ssr: false });
 
@@ -15,18 +12,17 @@ export function Atlas() {
   const [fullJourney, setFullJourney] = useState(false);
   const [selected, setSelected] = useState<Location | null>(null);
   const [resetToken, setResetToken] = useState(0);
-  const [focusedMaterialId, setFocusedMaterialId] = useState<string | null>(null);
   const commodity = useMemo(() => commodities.find((item) => item.id === commodityId)!, [commodityId]);
   const stage = commodity.stages[stageIndex];
 
-  const chooseCommodity = (id: string) => { setCommodityId(id); setStageIndex(0); setFullJourney(false); setFocusedMaterialId(null); setSelected(null); };
-  const chooseStage = (index: number) => { setStageIndex(index); setFullJourney(false); setFocusedMaterialId(null); setSelected(null); };
-  const reset = () => { setStageIndex(0); setFullJourney(false); setFocusedMaterialId(null); setSelected(null); setResetToken((n) => n + 1); };
+  const chooseCommodity = (id: string) => { setCommodityId(id); setStageIndex(0); setFullJourney(false); setSelected(null); };
+  const chooseStage = (index: number) => { setStageIndex(index); setFullJourney(false); setSelected(null); };
+  const reset = () => { setStageIndex(0); setFullJourney(false); setSelected(null); setResetToken((n) => n + 1); };
 
   return (
-    <main className="atlas-shell" id="copper-journey">
+    <main className="atlas-shell">
       <header className="topbar">
-        <div className="brand"><span className="brand-mark" aria-hidden="true">MW</span><div><h1>MATERIAL WORLD</h1><p>See how the physical world is made.</p></div></div>
+        <div className="brand"><span className="brand-mark" aria-hidden="true">MW</span><div><h1>MATERIAL WORLD</h1><p>A visual atlas of the things that make modern life.</p></div></div>
         <nav className="commodity-tabs" aria-label="Choose a material">
           {commodities.map((item) => <button key={item.id} className={item.id === commodity.id ? "active" : ""} onClick={() => chooseCommodity(item.id)}>{item.name}</button>)}
         </nav>
@@ -34,79 +30,56 @@ export function Atlas() {
       </header>
 
       <section className="map-area">
-        <WorldMap commodity={commodity} stageId={stage.id} fullJourney={fullJourney} focusedMaterialId={focusedMaterialId} selected={selected} onSelect={setSelected} resetToken={resetToken} />
+        <WorldMap commodity={commodity} stageId={stage.id} fullJourney={fullJourney} selected={selected} onSelect={setSelected} resetToken={resetToken} />
 
         <div className="context-card">
           <p className="eyebrow">{fullJourney ? "THE COMPLETE JOURNEY" : `STAGE ${stage.order} OF ${commodity.stages.length}`}</p>
-          <div className="context-title"><span className="material-swatch" style={{ background: fullJourney ? commodity.color : stage.accent }} /> <h2>{commodity.name}</h2><span className="divider">/</span><h3>{fullJourney ? "Source to society" : stage.name}</h3></div>
-          <p>{fullJourney ? commodity.shortDescription : stage.stageDescription}</p>
-          {!fullJourney && <div className="transformation"><span>TRANSFORMATION</span><strong>{stage.keyTransformation}</strong></div>}
-          {fullJourney && <div className="material-sequence" aria-label="Material transformation sequence">
-            {commodity.stages.map((item, index) => <span key={item.id}><i style={{ color: item.accent }}>{item.icon}</i>{item.descriptor}{index < commodity.stages.length - 1 && <b>→</b>}</span>)}
-          </div>}
-          {commodity.dataLabel && <p className="data-source">Source: {commodity.dataLabel}</p>}
+          <div className="context-title"><span className="material-swatch" style={{ background: commodity.color }} /> <h2>{commodity.name}</h2><span className="divider">/</span><h3>{fullJourney ? "Source to society" : stage.name}</h3></div>
+          <p>{fullJourney ? commodity.shortDescription : stage.description}</p>
+          <span className="map-instruction">Select a marked place to read its story</span>
         </div>
 
-        {fullJourney && commodity.id === "copper" && <CopperJourney focusedMaterialId={focusedMaterialId} onFocus={(id) => { setFocusedMaterialId(id); setSelected(null); }} />}
-
         <div className="stage-rail" aria-label="Supply chain stages">
-          {commodity.stages.map((item, index) => <button key={item.id} style={{ "--stage-accent": item.accent } as CSSProperties} onClick={() => chooseStage(index)} className={!fullJourney && index === stageIndex ? "active" : index < stageIndex || fullJourney ? "passed" : ""}>
-            <span className="stage-icon">{item.icon}</span><span className="stage-copy"><span className="stage-number">{String(item.order).padStart(2, "0")} · {item.descriptor}</span><span className="stage-name">{item.name}</span></span>
+          {commodity.stages.map((item, index) => <button key={item.id} onClick={() => chooseStage(index)} className={`stage-${index + 1} ${!fullJourney && index === stageIndex ? "active" : index < stageIndex || fullJourney ? "passed" : ""}`}>
+            <span className="stage-icon" aria-hidden="true">{["⌁", "◌", "◇", "▦", "⌂"][index] ?? "•"}</span><span className="stage-number">{String(item.order).padStart(2, "0")}</span><span className="stage-name">{item.name}</span><span className="stage-description">{item.description}</span>
           </button>)}
         </div>
 
         <div className="map-actions">
           <button disabled={stageIndex === 0 || fullJourney} onClick={() => chooseStage(stageIndex - 1)}><span>←</span> Previous stage</button>
           <button disabled={stageIndex === commodity.stages.length - 1 || fullJourney} onClick={() => chooseStage(stageIndex + 1)}>Next stage <span>→</span></button>
-          <button className={fullJourney ? "journey active" : "journey"} onClick={() => { setFullJourney(true); setFocusedMaterialId(null); setSelected(null); }}>View full journey <span>↗</span></button>
+          <button className={fullJourney ? "journey active" : "journey"} onClick={() => { setFullJourney(true); setSelected(null); }}>View full journey <span>↗</span></button>
           <button onClick={reset}>Reset view <span>↺</span></button>
         </div>
 
-        <div className="legend"><span className="legend-node" style={{ borderColor: stage.accent }} /> Transformation site <span className="legend-line" style={{ background: stage.accent }} /> Direction of flow</div>
+        <div className="legend"><span className="legend-node" style={{ borderColor: commodity.color }} /> Location <span className="legend-line" style={{ background: commodity.color }} /> Material flow</div>
         <p className="disclaimer">Illustrative educational flows. Locations and routes are simplified and are not real-time shipment data.</p>
 
         {selected && <aside className="info-panel" aria-label="Location information">
           <button className="close" onClick={() => setSelected(null)} aria-label="Close information panel">×</button>
-          <p className="eyebrow">FIELD NOTE · {String(commodity.stages.find((s) => s.id === selected.stageId)?.order).padStart(2, "0")}</p>
-          <h2>{locationLookup.byId(selected.id) ? <Link className="panel-entity-link" href={`/locations/${selected.id}`}>{selected.name} ↗</Link> : selected.name}</h2><p className="country">{selected.country}</p>
-          <div className="stage-pill"><span style={{ background: commodity.stages.find((s) => s.id === selected.stageId)?.accent }} />{commodity.stages.find((s) => s.id === selected.stageId)?.name}</div>
-          <p className="panel-overview">{selected.overview}</p>
-          <Info title="What happens here" text={selected.processDetails} />
+          <p className="eyebrow">LOCATION PROFILE · {String(commodity.stages.find((s) => s.id === selected.stageId)?.order).padStart(2, "0")}</p>
+          <h2>{selected.name}</h2><p className="country">{selected.country}</p>
+          <div className="stage-pill"><span style={{ background: commodity.color }} />{commodity.stages.find((s) => s.id === selected.stageId)?.name}</div>
+          <dl className="material-change"><div><dt>INPUT MATERIAL</dt><dd>{selected.input}</dd></div><span>→</span><div><dt>OUTPUT MATERIAL</dt><dd>{selected.output}</dd></div></dl>
+          <Info title="Overview · What happens here" text={selected.description} />
           <Info title="Why this location matters" text={selected.whyItMatters} />
-          <div className="input-output-grid"><ChipGroup title="Primary inputs" items={selected.primaryInputs} /><ChipGroup title="Outputs" items={selected.outputs} /></div>
-          {selected.secondaryInputs.length > 0 && <ChipGroup title="Also required" items={selected.secondaryInputs} />}
-          <ChipGroup title="Dependencies" items={selected.dependencies} subdued />
-          {selected.evidence.length > 0 && <section className="evidence"><h3>Source-backed context</h3>{selected.evidence.map((metric, index) => <div key={`${metric.label}-${index}`}><span>{metric.label}</span><strong>{formatMetric(metric.value, metric.unit)}</strong><small>{metric.source} · {metric.year}</small></div>)}</section>}
-          <Info title="Where it goes next" text={selected.whatHappensNext} />
-          <ChipGroup title="End uses & industries" items={[...selected.downstreamUses, ...selected.industriesServed]} last />
-          {selected.sources.length > 0 && <footer className="panel-sources"><h3>Sources</h3>{selected.sources.map((source) => <a key={`${source.publisher}-${source.year}`} href={source.url} target="_blank" rel="noreferrer">{source.publisher} · {source.year}<span>{source.dataset}</span></a>)}</footer>}
+          <Info title="Inputs & outputs" text={`${selected.input} becomes ${selected.output}.`} />
+          <Info title="Where it goes next" text={selected.nextStep} />
+          <Info title="Downstream uses" text={downstreamCopy(selected.output)} last />
         </aside>}
       </section>
     </main>
   );
 }
 
-const journeySteps = [
-  { material: "Copper Ore", materialId: "copper-ore", place: "Chile · Peru · DR Congo", action: "Mining", actionType: "transformation", next: "Crush, grind & float" },
-  { material: "Copper Concentrate", materialId: "copper-concentrate", place: "Pacific ports → China & Japan", action: "Ocean trade", actionType: "movement", next: "Smelt & refine" },
-  { material: "Copper Cathode", materialId: "copper-cathode", place: "China · Chile · Japan", action: "Electrorefining", actionType: "transformation", next: "Fabricate" },
-  { material: "Copper Wire", materialId: "copper-wire", place: "China · Germany · United States", action: "Rod casting & drawing", actionType: "transformation", next: "Build components" },
-  { material: "Electric Motor", materialId: "electric-motor", place: "EVs · machinery · HVAC", action: "End use", actionType: "end-use", next: "In service" },
-];
-
-function CopperJourney({ focusedMaterialId, onFocus }: { focusedMaterialId: string | null; onFocus: (id: string | null) => void }) {
-  return <aside className="journey-story" aria-label="Copper physical and geographic journey"><header><div><p className="eyebrow">PHYSICAL + GEOGRAPHIC JOURNEY</p><h2>Follow the copper</h2></div>{focusedMaterialId && <button onClick={() => onFocus(null)}>Show all</button>}</header><div className="journey-steps">{journeySteps.map((step, index) => <div className={`journey-step${focusedMaterialId === step.materialId ? " active" : ""}`} key={step.materialId}><button onClick={() => onFocus(step.materialId)}><span className={`semantic-icon ${step.actionType}`} /> <strong>{step.material}</strong><small>{step.place}</small></button><Link href={`/materials/${step.materialId}`}>Explore ↗</Link>{index < journeySteps.length - 1 && <div className={`journey-connector ${step.actionType}`}><b>{step.actionType === "movement" ? "⇢" : "↓"}</b><span>{step.actionType === "movement" ? "Geographic movement" : step.next}</span></div>}</div>)}</div><footer><span><i className="semantic-icon transformation"/> Physical transformation</span><span><i className="semantic-icon movement"/> Geographic flow</span><span><i className="semantic-icon end-use"/> End use</span></footer></aside>;
+function downstreamCopy(output: string) {
+  const normalized = output.toLowerCase();
+  if (normalized.includes("cathode") || normalized.includes("copper")) return "Wire, motors, transformers, electronics and construction systems depend on this material moving onward.";
+  if (normalized.includes("battery") || normalized.includes("cell")) return "Electric vehicles, grid storage and portable electronics turn these materials into stored energy.";
+  if (normalized.includes("fuel") || normalized.includes("petroleum")) return "Mobility, aviation, shipping and chemical manufacturing draw on these products.";
+  return "This output becomes an input for the next stage, connecting resource landscapes to everyday products.";
 }
 
 function Info({ title, text, last = false }: { title: string; text: string; last?: boolean }) {
   return <section className={`info-section${last ? " last" : ""}`}><h3>{title}</h3><p>{text}</p></section>;
-}
-
-function ChipGroup({ title, items, subdued = false, last = false }: { title: string; items: string[]; subdued?: boolean; last?: boolean }) {
-  return <section className={`chip-group${subdued ? " subdued" : ""}${last ? " last" : ""}`}><h3>{title}</h3><div>{[...new Set(items)].map((item) => { const entity = findEntityByName(item); return entity && "physicalForm" in entity ? <Link key={item} href={`/materials/${entity.slug}`}>{item} ↗</Link> : <span key={item}>{item}</span>; })}</div></section>;
-}
-
-function formatMetric(value: number, unit: string) {
-  if (unit === "USD") return new Intl.NumberFormat("en", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 }).format(value);
-  return `${new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(value)} ${unit}`;
 }
