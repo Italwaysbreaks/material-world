@@ -4,20 +4,17 @@
   "private": true,
   "packageManager": "npm@10.9.4",
   "engines": {
-    "node": "22.x",
-    "npm": "10.x"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "data:refresh": "node scripts/ingest/index.mjs",
-    "data:copper": "node scripts/ingest/index.mjs --commodity=copper"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "maplibre-gl": "^5.7.1",
+    "maplibre-gl": "^6.12.0",
     "next": "^16.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
