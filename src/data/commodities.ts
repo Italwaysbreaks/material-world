@@ -1,69 +1,24 @@
-import copperGeneratedJson from "@/generated/copper.json";
-
-export type SourceMetadata = { publisher: string; dataset: string; url: string; year: number; recordType: string };
-export type EvidenceMetric = { label: string; value: number; unit: string; year: number; source: string };
-export type Stage = {
-  id: string; name: string; order: number; description: string;
-  stageDescription: string; processSummary: string; keyTransformation: string;
-  accent: string; icon: string; descriptor: string;
-};
+export type Stage = { id: string; name: string; order: number; description: string };
 export type Location = {
   id: string; name: string; country: string; latitude: number; longitude: number; stageId: string;
   input: string; output: string; description: string; whyItMatters: string; nextStep: string;
-  overview: string; processDetails: string; primaryInputs: string[]; secondaryInputs: string[];
-  outputs: string[]; dependencies: string[]; downstreamUses: string[]; industriesServed: string[];
-  whatHappensNext: string;
-  sources: SourceMetadata[]; evidence: EvidenceMetric[];
 };
-export type Flow = { id: string; fromLocationId: string; toLocationId: string; stageId: string; material: string; description: string; valueUsd?: number; quantityKg?: number | null; year?: number; source?: SourceMetadata };
-export type Commodity = { id: string; name: string; shortDescription: string; color: string; stages: Stage[]; locations: Location[]; flows: Flow[]; dataLabel?: string };
+export type Flow = { id: string; fromLocationId: string; toLocationId: string; stageId: string; material: string; description: string };
+export type Commodity = { id: string; name: string; shortDescription: string; color: string; stages: Stage[]; locations: Location[]; flows: Flow[] };
 
-type GeneratedCopper = {
-  latestTradeYear: number; latestProductionYear: number;
-  hsMappings: { code: string; label: string; stageId: string; transformation: string }[];
-  production: { iso3: string; year: number; value: number; unit: string; source: Omit<SourceMetadata, "year"> }[];
-  tradeFlows: { id: string; commodityCode: string; exporterIso3: string; importerIso3: string; year: number; tradeValueUsd: number; netWeightKg: number | null; source: Omit<SourceMetadata, "year"> }[];
-};
-const copperGenerated = copperGeneratedJson as GeneratedCopper;
-
-const stageVisuals = [
-  { accent: "#d97845", icon: "◆", descriptor: "Origin" },
-  { accent: "#d1a13b", icon: "✦", descriptor: "Separate" },
-  { accent: "#4f8f89", icon: "◈", descriptor: "Purify" },
-  { accent: "#5776a3", icon: "▰", descriptor: "Make" },
-  { accent: "#745e8f", icon: "●", descriptor: "Put to work" },
-];
-const stage = (id: string, name: string, order: number, description: string, processSummary = description, keyTransformation = description): Stage => ({
-  id, name, order, description, stageDescription: description, processSummary, keyTransformation, ...stageVisuals[order - 1],
-});
-type LocationEnrichment = Partial<Pick<Location, "overview" | "processDetails" | "primaryInputs" | "secondaryInputs" | "outputs" | "dependencies" | "downstreamUses" | "industriesServed" | "whatHappensNext">>;
-const stageContext: Record<string, Pick<Location, "secondaryInputs" | "dependencies" | "industriesServed">> = {
-  mining: { secondaryInputs: ["Water", "Explosives", "Diesel or electricity"], dependencies: ["Ore grade and geology", "Water and power", "Roads, rail and ports", "Heavy equipment and skilled labor"], industriesServed: ["Mineral processing", "Metals"] },
-  extraction: { secondaryInputs: ["Water", "Energy", "Process chemicals"], dependencies: ["Resource geology", "Water and energy", "Transport infrastructure", "Operating expertise"], industriesServed: ["Chemical processing", "Energy and materials"] },
-  concentration: { secondaryInputs: ["Water", "Flotation reagents", "Grinding media"], dependencies: ["Electricity", "Process water", "Industrial machinery", "Tailings management"], industriesServed: ["Smelting", "Refining"] },
-  processing: { secondaryInputs: ["Heat", "Reagents", "Water"], dependencies: ["Reliable energy", "Chemical expertise", "Quality control", "Export logistics"], industriesServed: ["Battery materials", "Specialty chemicals"] },
-  refining: { secondaryInputs: ["Electricity", "Oxygen", "Acids and fluxes"], dependencies: ["Stable power", "Environmental controls", "Port and rail logistics", "Metallurgical expertise"], industriesServed: ["Electrical equipment", "Construction", "Transport manufacturing"] },
-  manufacturing: { secondaryInputs: ["Electricity", "Polymer insulation", "Steel housings", "Semiconductors"], dependencies: ["Industrial machinery", "Skilled labor", "Reliable logistics", "Component supply networks"], industriesServed: ["Construction", "Power grids", "Electronics", "Automotive", "Industrial machinery"] },
-  consumption: { secondaryInputs: ["Engineering", "Installation labor", "Complementary materials"], dependencies: ["Investment in buildings and grids", "Manufacturing demand", "Collection and recycling systems"], industriesServed: ["Construction", "Power grids", "Consumer electronics", "EVs", "Telecommunications", "Renewable energy", "Data centers"] },
-  products: { secondaryInputs: ["Engineering", "Complementary components"], dependencies: ["Manufacturing capacity", "Distribution networks", "End-market demand"], industriesServed: ["Transport", "Energy", "Consumer products"] },
-  transport: { secondaryInputs: ["Storage capacity", "Fuel and power"], dependencies: ["Pipelines and ports", "Shipping capacity", "Safe operations"], industriesServed: ["Refining", "Petrochemicals"] },
-};
-const location = (id: string, name: string, country: string, latitude: number, longitude: number, stageId: string, input: string, output: string, description: string, whyItMatters: string, nextStep: string, enrichment: LocationEnrichment = {}): Location => ({
-  id, name, country, latitude, longitude, stageId, input, output, description, whyItMatters, nextStep,
-  overview: description, processDetails: description, primaryInputs: [input], outputs: [output], downstreamUses: [nextStep],
-  whatHappensNext: nextStep, sources: [], evidence: [], ...(stageContext[stageId] ?? stageContext.products), ...enrichment,
-});
+const stage = (id: string, name: string, order: number, description: string): Stage => ({ id, name, order, description });
+const location = (id: string, name: string, country: string, latitude: number, longitude: number, stageId: string, input: string, output: string, description: string, whyItMatters: string, nextStep: string): Location => ({ id, name, country, latitude, longitude, stageId, input, output, description, whyItMatters, nextStep });
 const flow = (id: string, fromLocationId: string, toLocationId: string, stageId: string, material: string, description: string): Flow => ({ id, fromLocationId, toLocationId, stageId, material, description });
 
 const copper: Commodity = {
   id: "copper", name: "Copper", color: "#b65f3a",
   shortDescription: "From mineral-rich rock to the conductive wiring inside cities, motors and electronics.",
   stages: [
-    stage("mining", "Mining", 1, "Copper-bearing rock is removed from vast open-pit and underground deposits.", "Geologists map the orebody; drills, explosives and haul trucks move ore at immense scale.", "Copper-bearing rock → run-of-mine ore"),
-    stage("concentration", "Concentration", 2, "Crushing, grinding and flotation separate copper minerals from waste rock.", "Ore is crushed, milled to a fine slurry, then mixed with reagents so copper minerals float and can be collected.", "Copper ore → 20–30% copper concentrate"),
-    stage("refining", "Smelting & Refining", 3, "Heat and electrolysis transform concentrate into 99.99% pure cathodes.", "Smelting removes sulfur and iron to make blister copper; electrorefining deposits pure copper onto cathode sheets.", "Concentrate → blister copper → copper cathodes"),
-    stage("manufacturing", "Manufacturing", 4, "Cathodes become rod, wire, tubing, sheet, motors and electronic components.", "Fabricators melt, cast, roll, draw and machine copper into shapes engineered for electrical and thermal performance.", "Copper cathodes → wire, components & assemblies"),
-    stage("consumption", "End Use", 5, "Copper enters buildings, power grids, vehicles, machinery and everyday devices.", "Manufactured copper is installed across economies—not consumed at a single point—and remains recoverable for decades.", "Copper products → essential systems in use"),
+    stage("mining", "Mining", 1, "Ore is removed from vast open-pit and underground deposits."),
+    stage("concentration", "Concentration", 2, "Crushed ore is separated to produce a copper-rich concentrate."),
+    stage("refining", "Smelting & Refining", 3, "Heat and electrolysis transform concentrate into 99.99% pure cathodes."),
+    stage("manufacturing", "Manufacturing", 4, "Cathodes become wire, sheet, motors and electronic components."),
+    stage("consumption", "Consumption", 5, "Copper enters buildings, power grids, vehicles and everyday devices."),
   ],
   locations: [
     location("escondida", "Escondida Mine", "Chile", -24.27, -69.07, "mining", "Copper-bearing rock", "Copper ore", "Benches are drilled, blasted and hauled from one of the world's largest copper mines.", "Chile is the world's leading copper-mining nation, centered on exceptionally rich Andean geology.", "Ore is crushed and concentrated near the mine."),
@@ -77,62 +32,17 @@ const copper: Commodity = {
     location("shenzhen", "Pearl River Manufacturing", "China", 22.54, 114.06, "manufacturing", "Copper cathodes", "Wire, motors & electronics", "Copper is drawn into fine wire and built into motors, transformers and circuit assemblies.", "Dense electronics and electrical-equipment clusters create enormous copper demand.", "Components enter products used in China and exported worldwide."),
     location("hamburg", "Hamburg Fabrication Hub", "Germany", 53.55, 9.99, "manufacturing", "Copper cathodes", "Wire rod & sheet", "Cathodes are melted, rolled and drawn into precise semi-finished products.", "Germany's industrial base uses copper in machinery, vehicles and energy systems.", "Fabricated copper enters European factories and construction."),
     location("houston", "Gulf Coast Fabrication", "United States", 29.76, -95.37, "manufacturing", "Copper cathodes", "Cable & industrial components", "Metal is formed into cable, tubing and components for infrastructure and industry.", "The region connects ports, power infrastructure and a large industrial market.", "Products travel to buildings, grids and manufacturers."),
-    location("yangtze", "Yangtze River Delta", "China", 31.23, 121.47, "consumption", "Copper products", "Buildings, grids & devices", "Copper is embedded in new power grids, buildings, electric vehicles and appliances.", "China is both a dominant processor and the largest end-use market.", "Copper remains in service for decades and can later be recycled.", { outputs: ["Building wiring", "Motors and transformers", "Circuit boards", "EV drivetrains"], downstreamUses: ["Power grids", "Construction", "EVs", "Consumer electronics"] }),
-    location("california", "California End-use Market", "United States", 34.05, -118.24, "consumption", "Wire, motors & electronics", "Buildings, grids & devices", "Electrification, construction, data centers and consumer products put copper to work.", "Large, technology-intensive markets pull copper through a global production network.", "Scrap collection returns valuable copper to secondary smelters.", { outputs: ["Charging infrastructure", "Data centers", "Building wiring", "Renewable power systems"], downstreamUses: ["EVs", "Telecommunications", "Solar and wind", "Digital infrastructure"] }),
-    location("rotterdam", "Northwest Europe", "Netherlands / European Union", 51.92, 4.48, "consumption", "Copper products", "Energy systems & construction", "Cable, sheet and components are installed in renewable power, transport and buildings.", "Europe's energy transition raises demand while strong recycling loops recover old metal.", "End-of-life copper is sorted, remelted and reused.", { outputs: ["Grid cabling", "Heat pumps", "Plumbing and sheet", "Wind and solar systems"], downstreamUses: ["Power grids", "Construction", "Clean energy", "Industrial machinery"] }),
-    location("mumbai-copper", "Western India Demand Region", "India", 19.08, 72.88, "consumption", "Wire, tubing & components", "Urban infrastructure & equipment", "Rapid urbanization puts copper into buildings, grid expansion, railways, appliances and industrial equipment.", "India represents a large, growing demand region rather than a single point of consumption.", "Copper remains in long-lived infrastructure before entering recycling streams.", { outputs: ["Building wiring", "Grid equipment", "Rail systems", "Appliances"], downstreamUses: ["Construction", "Power grids", "Transport", "Industrial machinery"] }),
-    location("singapore-copper", "Southeast Asian Demand Region", "Southeast Asia", 1.35, 103.82, "consumption", "Copper products & components", "Electronics, buildings & grids", "Regional factories and fast-growing cities use copper in electronics, construction, power networks and data infrastructure.", "Southeast Asia combines export manufacturing with expanding domestic infrastructure demand.", "Products serve regional cities and global electronics markets; scrap can return to secondary refiners.", { outputs: ["Electronics", "Telecom networks", "Building systems", "Data centers"], downstreamUses: ["Consumer electronics", "Telecommunications", "Construction", "Digital infrastructure"] }),
+    location("yangtze", "Yangtze River Delta", "China", 31.23, 121.47, "consumption", "Copper products", "Buildings, grids & devices", "Copper is embedded in new power grids, buildings, electric vehicles and appliances.", "China is both a dominant processor and the largest end-use market.", "Copper remains in service for decades and can later be recycled."),
+    location("california", "California End-use Market", "United States", 34.05, -118.24, "consumption", "Wire, motors & electronics", "Buildings, grids & devices", "Electrification, construction, data centers and consumer products put copper to work.", "Large, technology-intensive markets pull copper through a global production network.", "Scrap collection returns valuable copper to secondary smelters."),
+    location("rotterdam", "Northwest Europe", "Netherlands / Europe", 51.92, 4.48, "consumption", "Copper products", "Energy systems & construction", "Cable, sheet and components are installed in renewable power, transport and buildings.", "Europe's energy transition raises demand while strong recycling loops recover old metal.", "End-of-life copper is sorted, remelted and reused."),
   ],
   flows: [
     flow("c1", "escondida", "antofagasta", "concentration", "Copper ore", "Ore is upgraded close to the mine."), flow("c2", "cerro-verde", "matarani", "concentration", "Copper concentrate", "Concentrate reaches a Pacific export terminal."),
     flow("c3", "antofagasta", "guixi", "refining", "Copper concentrate", "Chilean concentrate crosses the Pacific for smelting."), flow("c4", "matarani", "toyama", "refining", "Copper concentrate", "Andean concentrate supplies Asian refining."), flow("c5", "antofagasta", "chuquicamata", "refining", "Copper concentrate", "Some concentrate is refined domestically."),
     flow("c6", "guixi", "shenzhen", "manufacturing", "Copper cathodes", "Cathodes feed China's manufacturing belt."), flow("c7", "toyama", "hamburg", "manufacturing", "Refined copper", "Refined metal enters specialized fabrication."), flow("c8", "chuquicamata", "houston", "manufacturing", "Copper cathodes", "Cathodes move to North American fabricators."),
-    flow("c9", "shenzhen", "yangtze", "consumption", "Motors & electronics", "Components enter China's vast end-use economy."), flow("c10", "hamburg", "rotterdam", "consumption", "Wire rod & sheet", "Fabricated copper supplies European infrastructure."), flow("c11", "houston", "california", "consumption", "Cable & components", "Copper products cross the US to end users."), flow("c12", "shenzhen", "mumbai-copper", "consumption", "Components & equipment", "Regional manufacturing supplies India's expanding infrastructure."), flow("c13", "shenzhen", "singapore-copper", "consumption", "Wire & electronic components", "Copper-bearing components serve Southeast Asian factories and cities."),
+    flow("c9", "shenzhen", "yangtze", "consumption", "Motors & electronics", "Components enter China's vast end-use economy."), flow("c10", "hamburg", "rotterdam", "consumption", "Wire rod & sheet", "Fabricated copper supplies European infrastructure."), flow("c11", "houston", "california", "consumption", "Cable & components", "Copper products cross the US to end users."),
   ],
 };
-
-const copperLocationIso: Record<string, string> = {
-  escondida: "CHL", antofagasta: "CHL", chuquicamata: "CHL", "cerro-verde": "PER", matarani: "PER",
-  tenke: "COD", guixi: "CHN", shenzhen: "CHN", yangtze: "CHN", hamburg: "DEU", california: "USA", houston: "USA",
-};
-const sourceWithYear = (source: Omit<SourceMetadata, "year">, year: number): SourceMetadata => ({ ...source, year });
-
-copper.locations = copper.locations.map((item) => {
-  const iso3 = copperLocationIso[item.id];
-  if (!iso3) return item;
-  const production = copperGenerated.production.find((record) => record.iso3 === iso3);
-  const relatedTrade = copperGenerated.tradeFlows.filter((record) => record.exporterIso3 === iso3 || record.importerIso3 === iso3);
-  const sources = [
-    ...(production ? [sourceWithYear(production.source, production.year)] : []),
-    ...relatedTrade.map((record) => sourceWithYear(record.source, record.year)),
-  ].filter((source, index, all) => all.findIndex((other) => other.publisher === source.publisher && other.year === source.year) === index);
-  const evidence: EvidenceMetric[] = [
-    ...(production ? [{ label: "Mine production", value: production.value, unit: production.unit, year: production.year, source: production.source.publisher }] : []),
-    ...relatedTrade.slice(0, 2).map((record) => ({ label: record.exporterIso3 === iso3 ? "Recorded exports" : "Recorded imports", value: record.tradeValueUsd, unit: "USD", year: record.year, source: record.source.publisher })),
-  ];
-  return { ...item, sources, evidence };
-});
-
-const endpointByStage: Record<string, { from: Record<string, string>; to: Record<string, string> }> = {
-  refining: { from: { CHL: "antofagasta", PER: "matarani" }, to: { CHN: "guixi", JPN: "toyama" } },
-  manufacturing: { from: { CHL: "chuquicamata", CHN: "guixi" }, to: { CHN: "shenzhen", DEU: "hamburg", USA: "houston" } },
-  consumption: { from: { CHN: "shenzhen", DEU: "hamburg", USA: "houston" }, to: { CHN: "yangtze", USA: "california", IND: "mumbai-copper" } },
-};
-const generatedCopperFlows: Flow[] = copperGenerated.tradeFlows.flatMap((record) => {
-  const mapping = copperGenerated.hsMappings.find((item) => item.code === record.commodityCode);
-  if (!mapping) return [];
-  const endpoints = endpointByStage[mapping.stageId];
-  const fromLocationId = endpoints?.from[record.exporterIso3];
-  const toLocationId = endpoints?.to[record.importerIso3];
-  if (!fromLocationId || !toLocationId) return [];
-  return [{
-    id: record.id, fromLocationId, toLocationId, stageId: mapping.stageId, material: mapping.transformation,
-    description: `${mapping.label}: recorded bilateral exports in ${record.year}.`, valueUsd: record.tradeValueUsd,
-    quantityKg: record.netWeightKg, year: record.year, source: sourceWithYear(record.source, record.year),
-  }];
-});
-copper.flows = [...copper.flows.filter((flow) => !generatedCopperFlows.some((generated) => generated.fromLocationId === flow.fromLocationId && generated.toLocationId === flow.toLocationId && generated.stageId === flow.stageId)), ...generatedCopperFlows];
-copper.dataLabel = `UN Comtrade · ${copperGenerated.latestTradeYear}  /  USGS · ${copperGenerated.latestProductionYear}`;
 
 const oil: Commodity = {
   id: "oil", name: "Crude Oil", color: "#516d67", shortDescription: "From underground reservoirs to fuels and chemical building blocks that move modern life.",
