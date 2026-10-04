@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import maplibregl, { LngLatBoundsLike, Map as MapLibreMap, Marker } from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import type { LngLatBoundsLike, Map as MapLibreMap, Marker } from "maplibre-gl";
 import type { Commodity, Location } from "@/data/commodities";
 
 type Props = { commodity: Commodity; stageId: string; fullJourney: boolean; selected: Location | null; onSelect: (location: Location) => void; resetToken: number };
@@ -26,6 +27,7 @@ export function WorldMap({ commodity, stageId, fullJourney, selected, onSelect, 
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const selectRef = useRef(onSelect);
+  const selectedId = selected?.id;
 
   useEffect(() => { selectRef.current = onSelect; }, [onSelect]);
 
@@ -70,7 +72,7 @@ export function WorldMap({ commodity, stageId, fullJourney, selected, onSelect, 
 
       visibleLocations.forEach((location) => {
         const el = document.createElement("button");
-        el.className = `map-marker${selected?.id === location.id ? " is-selected" : ""}`;
+        el.className = `map-marker${selectedId === location.id ? " is-selected" : ""}`;
         el.style.setProperty("--material", commodity.color);
         el.setAttribute("aria-label", `${location.name}, ${location.country}`);
         el.innerHTML = `<span>${commodity.stages.find((s) => s.id === location.stageId)?.order}</span>`;
@@ -82,11 +84,11 @@ export function WorldMap({ commodity, stageId, fullJourney, selected, onSelect, 
       if (visibleLocations.length) {
         const bounds = new maplibregl.LngLatBounds();
         visibleLocations.forEach((l) => bounds.extend([l.longitude, l.latitude]));
-        map.fitBounds(bounds as LngLatBoundsLike, { padding: { top: 150, bottom: 90, left: 80, right: selected ? 440 : 80 }, maxZoom: fullJourney ? 2.2 : 4.3, duration: 900 });
+        map.fitBounds(bounds as LngLatBoundsLike, { padding: { top: 150, bottom: 90, left: 80, right: selectedId ? 440 : 80 }, maxZoom: fullJourney ? 2.2 : 4.3, duration: 900 });
       }
     };
     if (map.loaded()) update(); else map.once("load", update);
-  }, [commodity, stageId, fullJourney, selected?.id, resetToken]);
+  }, [commodity, stageId, fullJourney, selectedId, resetToken]);
 
   return <div ref={host} className="map-canvas" aria-label="Interactive world map of material flows" />;
 }
