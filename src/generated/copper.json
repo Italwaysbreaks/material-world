@@ -1,0 +1,253 @@
+{
+  "schemaVersion": 1,
+  "commodityId": "copper",
+  "generatedAt": "2026-02-01T00:00:00.000Z",
+  "mode": "fallback-snapshot",
+  "latestTradeYear": 2023,
+  "latestProductionYear": 2024,
+  "hsMappings": [
+    {
+      "code": "260300",
+      "label": "Copper ores and concentrates",
+      "stageId": "refining",
+      "transformation": "Copper concentrate",
+      "classification": "HS 2022 (6-digit)"
+    },
+    {
+      "code": "740311",
+      "label": "Refined copper cathodes and sections of cathodes",
+      "stageId": "manufacturing",
+      "transformation": "Copper cathodes",
+      "classification": "HS 2022 (6-digit)"
+    },
+    {
+      "code": "740811",
+      "label": "Refined copper wire, maximum cross-section over 6 mm",
+      "stageId": "consumption",
+      "transformation": "Copper wire",
+      "classification": "HS 2022 (6-digit)"
+    },
+    {
+      "code": "740911",
+      "label": "Refined copper plate, sheet and strip, in coils, over 0.15 mm",
+      "stageId": "consumption",
+      "transformation": "Copper sheet and strip",
+      "classification": "HS 2022 (6-digit)"
+    },
+    {
+      "code": "741110",
+      "label": "Refined copper tubes and pipes",
+      "stageId": "consumption",
+      "transformation": "Copper tubes",
+      "classification": "HS 2022 (6-digit)"
+    }
+  ],
+  "countries": [
+    {
+      "iso3": "CHL",
+      "name": "Chile",
+      "latitude": -30,
+      "longitude": -71,
+      "comtradeCode": 152
+    },
+    {
+      "iso3": "CHN",
+      "name": "China",
+      "latitude": 35.9,
+      "longitude": 104.2,
+      "comtradeCode": 156
+    },
+    {
+      "iso3": "DEU",
+      "name": "Germany",
+      "latitude": 51.2,
+      "longitude": 10.4,
+      "comtradeCode": 276
+    },
+    {
+      "iso3": "PER",
+      "name": "Peru",
+      "latitude": -9.2,
+      "longitude": -75,
+      "comtradeCode": 604
+    },
+    {
+      "iso3": "USA",
+      "name": "United States",
+      "latitude": 39.8,
+      "longitude": -98.6,
+      "comtradeCode": 842
+    }
+  ],
+  "production": [
+    {
+      "iso3": "CHL",
+      "year": 2024,
+      "value": 5300,
+      "unit": "thousand metric tonnes contained copper",
+      "source": {
+        "publisher": "U.S. Geological Survey",
+        "dataset": "Mineral Commodity Summaries 2025 — Copper",
+        "url": "https://pubs.usgs.gov/periodicals/mcs2025/mcs2025-copper.pdf",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "published-table-snapshot"
+      }
+    },
+    {
+      "iso3": "COD",
+      "year": 2024,
+      "value": 3300,
+      "unit": "thousand metric tonnes contained copper",
+      "source": {
+        "publisher": "U.S. Geological Survey",
+        "dataset": "Mineral Commodity Summaries 2025 — Copper",
+        "url": "https://pubs.usgs.gov/periodicals/mcs2025/mcs2025-copper.pdf",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "published-table-snapshot"
+      }
+    },
+    {
+      "iso3": "PER",
+      "year": 2024,
+      "value": 2600,
+      "unit": "thousand metric tonnes contained copper",
+      "source": {
+        "publisher": "U.S. Geological Survey",
+        "dataset": "Mineral Commodity Summaries 2025 — Copper",
+        "url": "https://pubs.usgs.gov/periodicals/mcs2025/mcs2025-copper.pdf",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "published-table-snapshot"
+      }
+    },
+    {
+      "iso3": "CHN",
+      "year": 2024,
+      "value": 1800,
+      "unit": "thousand metric tonnes contained copper",
+      "source": {
+        "publisher": "U.S. Geological Survey",
+        "dataset": "Mineral Commodity Summaries 2025 — Copper",
+        "url": "https://pubs.usgs.gov/periodicals/mcs2025/mcs2025-copper.pdf",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "published-table-snapshot"
+      }
+    },
+    {
+      "iso3": "USA",
+      "year": 2024,
+      "value": 1100,
+      "unit": "thousand metric tonnes contained copper",
+      "source": {
+        "publisher": "U.S. Geological Survey",
+        "dataset": "Mineral Commodity Summaries 2025 — Copper",
+        "url": "https://pubs.usgs.gov/periodicals/mcs2025/mcs2025-copper.pdf",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "published-table-snapshot"
+      }
+    }
+  ],
+  "tradeFlows": [
+    {
+      "id": "comtrade-260300-CHL-CHN-1",
+      "commodityCode": "260300",
+      "exporterIso3": "CHL",
+      "importerIso3": "CHN",
+      "year": 2023,
+      "tradeValueUsd": 13270000000,
+      "netWeightKg": 8960000000,
+      "unit": "kg",
+      "source": {
+        "publisher": "UN Comtrade",
+        "dataset": "International Merchandise Trade Statistics",
+        "url": "https://comtradeplus.un.org/",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "checked-fallback-snapshot"
+      }
+    },
+    {
+      "id": "comtrade-260300-PER-CHN-2",
+      "commodityCode": "260300",
+      "exporterIso3": "PER",
+      "importerIso3": "CHN",
+      "year": 2023,
+      "tradeValueUsd": 9080000000,
+      "netWeightKg": 6570000000,
+      "unit": "kg",
+      "source": {
+        "publisher": "UN Comtrade",
+        "dataset": "International Merchandise Trade Statistics",
+        "url": "https://comtradeplus.un.org/",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "checked-fallback-snapshot"
+      }
+    },
+    {
+      "id": "comtrade-740311-CHL-CHN-3",
+      "commodityCode": "740311",
+      "exporterIso3": "CHL",
+      "importerIso3": "CHN",
+      "year": 2023,
+      "tradeValueUsd": 6500000000,
+      "netWeightKg": 734000000,
+      "unit": "kg",
+      "source": {
+        "publisher": "UN Comtrade",
+        "dataset": "International Merchandise Trade Statistics",
+        "url": "https://comtradeplus.un.org/",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "checked-fallback-snapshot"
+      }
+    },
+    {
+      "id": "comtrade-740811-DEU-USA-4",
+      "commodityCode": "740811",
+      "exporterIso3": "DEU",
+      "importerIso3": "USA",
+      "year": 2023,
+      "tradeValueUsd": 184000000,
+      "netWeightKg": 17800000,
+      "unit": "kg",
+      "source": {
+        "publisher": "UN Comtrade",
+        "dataset": "International Merchandise Trade Statistics",
+        "url": "https://comtradeplus.un.org/",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "checked-fallback-snapshot"
+      }
+    },
+    {
+      "id": "comtrade-741110-CHN-USA-5",
+      "commodityCode": "741110",
+      "exporterIso3": "CHN",
+      "importerIso3": "USA",
+      "year": 2023,
+      "tradeValueUsd": 312000000,
+      "netWeightKg": 32800000,
+      "unit": "kg",
+      "source": {
+        "publisher": "UN Comtrade",
+        "dataset": "International Merchandise Trade Statistics",
+        "url": "https://comtradeplus.un.org/",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "checked-fallback-snapshot"
+      }
+    },
+    {
+      "id": "comtrade-740911-CHN-USA-6",
+      "commodityCode": "740911",
+      "exporterIso3": "CHN",
+      "importerIso3": "USA",
+      "year": 2023,
+      "tradeValueUsd": 246000000,
+      "netWeightKg": 24100000,
+      "unit": "kg",
+      "source": {
+        "publisher": "UN Comtrade",
+        "dataset": "International Merchandise Trade Statistics",
+        "url": "https://comtradeplus.un.org/",
+        "retrievedAt": "2026-02-01T00:00:00.000Z",
+        "recordType": "checked-fallback-snapshot"
+      }
+    }
+  ]
+}
