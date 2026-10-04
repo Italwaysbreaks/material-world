@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "commodityId": "lithium",
+  "generatedAt": "2026-02-01T00:00:00.000Z",
+  "mode": "curated-fallback",
+  "note": "Adapter-ready placeholder; geography remains curated until the corresponding public-source adapter is activated.",
+  "source": {
+    "publisher": "U.S. Geological Survey",
+    "dataset": "Mineral Commodity Summaries — Lithium",
+    "url": "https://www.usgs.gov/centers/national-minerals-information-center/lithium-statistics-and-information"
+  }
+}
