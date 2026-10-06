@@ -2,19 +2,24 @@
   "name": "material-world",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "packageManager": "npm@10.9.4",
   "engines": {
-    "node": "22.x"
+    "node": "22.x",
+    "npm": "10.x"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "data:refresh": "node scripts/ingest/index.mjs",
+    "data:copper": "node scripts/ingest/index.mjs --commodity=copper",
+    "data:validate": "node --experimental-transform-types scripts/validate-graph.ts"
   },
   "dependencies": {
-    "maplibre-gl": "^6.12.0",
+    "maplibre-gl": "^5.7.1",
     "next": "^16.0.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

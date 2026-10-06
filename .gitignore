@@ -1,17 +1,5 @@
-# Dependencies
-/node_modules/
-
-# Next.js build output
-/.next/
-/out/
-
-# Vercel CLI metadata
-/.vercel/
-
-# Local configuration and logs
+node_modules/
+.next/
+*.tsbuildinfo
 .env*
 !.env.example
-*.log
-
-# TypeScript incremental build metadata
-*.tsbuildinfo

@@ -1,8 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { commodities, Location } from "@/data/commodities";
+import { findEntityByName, locationLookup } from "@/data/graph";
 
 const WorldMap = dynamic(() => import("./WorldMap").then((m) => m.WorldMap), { ssr: false });
 

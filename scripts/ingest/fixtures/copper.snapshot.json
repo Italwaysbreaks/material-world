@@ -1,0 +1,24 @@
+{
+  "snapshotDate": "2026-02-01T00:00:00.000Z",
+  "tradeYear": 2023,
+  "productionYear": 2024,
+  "tradeFlows": [
+    { "commodityCode": "260300", "exporterIso3": "CHL", "importerIso3": "CHN", "year": 2023, "tradeValueUsd": 13270000000, "netWeightKg": 8960000000 },
+    { "commodityCode": "260300", "exporterIso3": "PER", "importerIso3": "CHN", "year": 2023, "tradeValueUsd": 9080000000, "netWeightKg": 6570000000 },
+    { "commodityCode": "740311", "exporterIso3": "CHL", "importerIso3": "CHN", "year": 2023, "tradeValueUsd": 6500000000, "netWeightKg": 734000000 },
+    { "commodityCode": "740811", "exporterIso3": "DEU", "importerIso3": "USA", "year": 2023, "tradeValueUsd": 184000000, "netWeightKg": 17800000 },
+    { "commodityCode": "741110", "exporterIso3": "CHN", "importerIso3": "USA", "year": 2023, "tradeValueUsd": 312000000, "netWeightKg": 32800000 },
+    { "commodityCode": "740911", "exporterIso3": "CHN", "importerIso3": "USA", "year": 2023, "tradeValueUsd": 246000000, "netWeightKg": 24100000 }
+  ],
+  "production": [
+    { "iso3": "CHL", "year": 2024, "value": 5300 },
+    { "iso3": "COD", "year": 2024, "value": 3300 },
+    { "iso3": "PER", "year": 2024, "value": 2600 },
+    { "iso3": "CHN", "year": 2024, "value": 1800 },
+    { "iso3": "USA", "year": 2024, "value": 1100 }
+  ],
+  "sources": {
+    "comtrade": { "publisher": "UN Comtrade", "dataset": "International Merchandise Trade Statistics", "url": "https://comtradeplus.un.org/", "retrievedAt": "2026-02-01T00:00:00.000Z", "recordType": "checked-fallback-snapshot" },
+    "usgs": { "publisher": "U.S. Geological Survey", "dataset": "Mineral Commodity Summaries 2025 — Copper", "url": "https://pubs.usgs.gov/periodicals/mcs2025/mcs2025-copper.pdf", "retrievedAt": "2026-02-01T00:00:00.000Z" }
+  }
+}
